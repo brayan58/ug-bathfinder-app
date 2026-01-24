@@ -1,0 +1,46 @@
+name: ug_bathfinder_app
+description: "App para localizar baños en Universidad de Guayaquil y Puertas"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # HTTP client
+  dio: ^5.4.0
+  
+  # Gestión de estado
+  provider: ^6.1.0
+  
+  # Almacenamiento local
+  shared_preferences: ^2.2.2
+  
+  # Google Maps
+  google_maps_flutter: ^2.5.3
+  
+  # Geolocalización
+  geolocator: ^11.0.0
+  
+  # Permisos
+  permission_handler: ^11.3.0
+  
+  # Iconos
+  cupertino_icons: ^1.0.6
+
+  # Rutas y polilíneas
+  flutter_polyline_points: ^2.0.1
+
+  # Internacionalización
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
