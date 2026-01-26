@@ -1,4 +1,5 @@
 /// Archivo de ejemplo para configuración de entorno
+library;
 
 /// INSTRUCCIONES:
 /// 1. Copiar este archivo y renombrarlo a 'env_config.dart'

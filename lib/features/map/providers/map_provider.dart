@@ -236,7 +236,7 @@ class MapProvider with ChangeNotifier {
             title: bano.nombre,
             snippet: '${bano.piso} - ${bano.estado}',
           ),
-          icon: _getBanoMarkerIcon(bano.estado),
+          icon: _getMarkerIcon(bano.estado),
           onTap: () {
             _onMarkerTapped?.call(bano.id);
           },
@@ -265,14 +265,14 @@ class MapProvider with ChangeNotifier {
     }
   }
 
-  BitmapDescriptor _getBanoMarkerIcon(String estado) {
+  BitmapDescriptor _getMarkerIcon(String estado) {
     switch (estado) {
       case 'disponible':
         return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
       case 'mantenimiento':
-        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
+        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange);  
       case 'cerrado':
-        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange);
+        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);    
       default:
         return BitmapDescriptor.defaultMarker;
     }
