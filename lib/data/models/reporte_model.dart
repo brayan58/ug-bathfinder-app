@@ -4,7 +4,7 @@ class ReporteModel {
   final int id;
   final String tipo;
   final String? descripcion;
-  final String urgencia;
+  final String? urgencia; 
   final String estado;
   final DateTime fechaCreacion;
   final DateTime? fechaResolucion;
@@ -28,7 +28,7 @@ class ReporteModel {
     required this.id,
     required this.tipo,
     this.descripcion,
-    required this.urgencia,
+    this.urgencia, 
     required this.estado,
     required this.fechaCreacion,
     this.fechaResolucion,
@@ -56,7 +56,7 @@ class ReporteModel {
       id: int.parse(json['id'].toString()),
       tipo: json['tipo'],
       descripcion: json['descripcion'],
-      urgencia: json['urgencia'],
+      urgencia: json['urgencia'], 
       estado: json['estado'],
       fechaCreacion: DateTime.parse(json['fecha_creacion']),
       fechaResolucion: json['fecha_resolucion'] != null
@@ -101,5 +101,22 @@ class ReporteModel {
       return puertaCodigo ?? '';
     }
     return banoCodigo ?? '';
+  }
+  
+
+  String get urgenciaTexto {
+    if (urgencia == null || urgencia!.isEmpty) {
+      return 'Sin asignar';
+    }
+    switch (urgencia) {
+      case 'baja':
+        return 'Baja';
+      case 'media':
+        return 'Media';
+      case 'alta':
+        return 'Alta';
+      default:
+        return urgencia!;
+    }
   }
 }

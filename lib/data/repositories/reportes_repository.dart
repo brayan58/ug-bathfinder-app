@@ -3,16 +3,14 @@ import '../services/api_service.dart';
 import '../models/reporte_model.dart';
 import '../../core/constants/api_constants.dart';
 
-
 class ReportesRepository {
   final ApiService _apiService = ApiService();
 
-  /// Crea un nuevo reporte
   /// Requiere conexión a internet
   Future<Map<String, dynamic>> createReporte({
     required int banoId,
     required String tipo,
-    required String urgencia,
+    String? urgencia,
     String? descripcion,
   }) async {
     try {
@@ -20,14 +18,20 @@ class ReportesRepository {
 
       print('📝 Creando reporte para baño ID: $banoId');
 
+      final body = {
+        'bano_id': banoId,
+        'tipo': tipo,
+        'descripcion': descripcion,
+      };
+
+      // Solo agregar urgencia si no es null
+      if (urgencia != null) {
+        body['urgencia'] = urgencia;
+      }
+
       final response = await _apiService.post(
         ApiConstants.createReporte,
-        {
-          'bano_id': banoId,
-          'tipo': tipo,
-          'urgencia': urgencia,
-          'descripcion': descripcion,
-        },
+        body,
       );
 
       print('✅ Reporte creado: ${response.statusCode}');
@@ -35,20 +39,25 @@ class ReportesRepository {
       if (response.data['success'] == true) {
         return {'success': true, 'message': response.data['message']};
       } else {
-        return {'success': false, 'error': response.data['error'] ?? 'Error desconocido'};
+        return {
+          'success': false,
+          'error': response.data['error'] ?? 'Error desconocido'
+        };
       }
     } on NoConnectionException catch (_) {
-      print('📴 Sin conexión al crear reporte');
+      print('🔴 Sin conexión al crear reporte');
       return {
         'success': false,
-        'error': 'Sin conexión a internet.\n\nConéctate a una red WiFi o datos móviles para enviar el reporte.',
+        'error':
+            'Sin conexión a internet.\n\nConéctate a una red WiFi o datos móviles para enviar el reporte.',
         'isConnectionError': true,
       };
     } on ConnectionTimeoutException catch (_) {
       print('⏰ Timeout al crear reporte');
       return {
         'success': false,
-        'error': 'El servidor tardó demasiado en responder.\n\nIntenta de nuevo en unos momentos.',
+        'error':
+            'El servidor tardó demasiado en responder.\n\nIntenta de nuevo en unos momentos.',
         'isConnectionError': true,
       };
     } on DioException catch (e) {
@@ -80,10 +89,11 @@ class ReportesRepository {
 
       if (response.data['success'] == true) {
         final List<dynamic> reportesJson = response.data['data'];
-        final reportes = reportesJson.map((json) => ReporteModel.fromJson(json)).toList();
-        
+        final reportes =
+            reportesJson.map((json) => ReporteModel.fromJson(json)).toList();
+
         print('📋 Reportes obtenidos: ${reportes.length}');
-        
+
         return ReportesResult(
           reportes: reportes,
           isSuccess: true,
@@ -97,7 +107,7 @@ class ReportesRepository {
         );
       }
     } on NoConnectionException catch (_) {
-      print('📴 Sin conexión al obtener reportes');
+      print('🔴 Sin conexión al obtener reportes');
       return ReportesResult(
         reportes: [],
         isSuccess: false,
@@ -130,7 +140,7 @@ class ReportesResult {
   final bool isSuccess;
   final String? message;
   final bool isConnectionError;
-  
+
   ReportesResult({
     required this.reportes,
     required this.isSuccess,

@@ -34,7 +34,7 @@ class _MapPageState extends State<MapPage> {
         );
       });
 
-      // Callback para puertas (NUEVO)
+      // Callback para puertas 
       mapProvider.setOnPuertaMarkerTapped((puertaId) {
         _showPuertaBottomSheet(context, puertaId);
       });
@@ -69,6 +69,7 @@ class _MapPageState extends State<MapPage> {
           // Botón de filtros
           IconButton(
             icon: const Icon(Icons.filter_list),
+            tooltip: 'Filtros', 
             onPressed: () {
               showModalBottomSheet(
                 context: context,
@@ -81,7 +82,7 @@ class _MapPageState extends State<MapPage> {
           // Botón de "Mis Reportes"
           IconButton(
             icon: const Icon(Icons.assignment),
-            tooltip: 'Mis Reportes',
+            tooltip: 'Mis Reportes', 
             onPressed: () {
               Navigator.push(
                 context,
@@ -95,6 +96,7 @@ class _MapPageState extends State<MapPage> {
           // Botón de refresh
           IconButton(
             icon: const Icon(Icons.refresh),
+            tooltip: 'Actualizar', 
             onPressed: () async {
               final success = await mapProvider.refreshFromServer();
               if (mounted) {
@@ -117,6 +119,7 @@ class _MapPageState extends State<MapPage> {
           // Botón de logout
           IconButton(
             icon: const Icon(Icons.logout),
+            tooltip: 'Cerrar sesión', 
             onPressed: () async {
               await authProvider.logout();
               if (context.mounted) {
@@ -214,12 +217,14 @@ class _MapPageState extends State<MapPage> {
                           if (!mapProvider.isNavigating) ...[
                             FloatingActionButton(
                               heroTag: 'location',
+                              tooltip: 'Mi ubicación', 
                               child: const Icon(Icons.my_location),
                               onPressed: () => mapProvider.getCurrentLocation(),
                             ),
                             const SizedBox(height: 8),
                             FloatingActionButton(
                               heroTag: 'nearest',
+                              tooltip: 'Buscar más cercano', 
                               child: const Icon(Icons.near_me),
                               onPressed: () =>
                                   _findNearestBano(context, mapProvider),
@@ -227,12 +232,14 @@ class _MapPageState extends State<MapPage> {
                             const SizedBox(height: 8),
                             FloatingActionButton(
                               heroTag: 'legend',
+                              tooltip: 'Leyenda', 
                               child: const Icon(Icons.info),
                               onPressed: () => _showLegend(context),
                             ),
                           ] else ...[
                             FloatingActionButton(
                               heroTag: 'stop',
+                              tooltip: 'Detener navegación', 
                               backgroundColor: AppColors.error,
                               child: const Icon(Icons.close),
                               onPressed: () => mapProvider.stopNavigation(),
@@ -482,9 +489,9 @@ class _MapPageState extends State<MapPage> {
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
-            _legendItem(AppColors.disponible, 'Disponible'),
-            _legendItem(AppColors.mantenimiento, 'Mantenimiento'),
-            _legendItem(AppColors.cerrado, 'Cerrado'),
+            _legendItem(const Color.fromARGB(255, 3, 250, 11), 'Disponible'),
+            _legendItem(const Color.fromARGB(255, 255, 115, 0), 'Mantenimiento'),
+            _legendItem(const Color.fromARGB(255, 241, 4, 4), 'Cerrado'),
             const Divider(height: 24),
             const Text(
               'Puertas:',
@@ -522,7 +529,7 @@ class _MapPageState extends State<MapPage> {
   }
 }
 
-/// Bottom sheet para mostrar información de una puerta
+
 class _PuertaBottomSheet extends StatelessWidget {
   final PuertaModel puerta;
 
@@ -671,7 +678,7 @@ class _PuertaBottomSheet extends StatelessWidget {
                 label: const Text('REPORTAR PUERTA CERRADA'),
                 onPressed: () {
                   Navigator.pop(context);
-                 
+
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Función de reporte próximamente'),

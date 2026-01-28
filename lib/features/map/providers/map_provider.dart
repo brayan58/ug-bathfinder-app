@@ -8,8 +8,6 @@ import '../../../data/models/puerta_model.dart';
 import '../../../core/utils/distance_calculator.dart';
 import '../../../data/services/directions_service.dart';
 
-
-
 class MapProvider with ChangeNotifier {
   final BanosRepository _banosRepository = BanosRepository();
   final PuertasRepository _puertasRepository = PuertasRepository();
@@ -27,6 +25,8 @@ class MapProvider with ChangeNotifier {
   Set<Marker> _markers = {};
   bool _isLoading = true;
   String? _errorMessage;
+  
+  // Filtros
   String? _selectedFacultad;
   String? _selectedPiso;
   String? _selectedGenero;
@@ -72,8 +72,20 @@ class MapProvider with ChangeNotifier {
   String? get selectedPiso => _selectedPiso;
   String? get selectedGenero => _selectedGenero;
   bool get soloAccesibles => _soloAccesibles;
-  List<BanoModel> get banosFiltered =>
-      _banosFilteredList.isEmpty ? _banos : _banosFilteredList;
+  
+  
+  List<BanoModel> get banosFiltered {
+    // Si no hay ningún filtro activo, devolver todos los baños
+    if (_selectedFacultad == null && 
+        _selectedPiso == null && 
+        _selectedGenero == null && 
+        !_soloAccesibles) {
+      return _banos;
+    }
+    // Si hay filtros activos, devolver lista filtrada (incluso si está vacía)
+    return _banosFilteredList;
+  }
+
   int? get selectedBanoId => _selectedBanoId;
   LatLng get initialPosition => _ugCenter;
   LatLngBounds get campusBounds => _campusBounds;
@@ -222,12 +234,12 @@ class MapProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Crea TODOS los marcadores (baños + puertas)
   void _createAllMarkers() {
     _markers = {};
     
-    // Agregar marcadores de baños
-    for (var bano in (_banosFilteredList.isEmpty ? _banos : _banosFilteredList)) {
+
+    // Esto asegura que si el filtro no tiene resultados, no se muestren baños
+    for (var bano in banosFiltered) {
       _markers.add(
         Marker(
           markerId: MarkerId('bano_${bano.id}'),
@@ -278,7 +290,7 @@ class MapProvider with ChangeNotifier {
     }
   }
 
-  /// Icono para marcadores de puertas (NUEVO)
+  /// Icono para marcadores de puertas
   BitmapDescriptor _getPuertaMarkerIcon(String estado) {
     // Azul para puerta abierta, Violeta para cerrada
     if (estado == 'abierta') {
@@ -338,7 +350,6 @@ class MapProvider with ChangeNotifier {
     }
   }
 
-
   /// Obtiene una puerta por ID
   PuertaModel? getPuertaById(int id) {
     try {
@@ -385,8 +396,6 @@ class MapProvider with ChangeNotifier {
       bano.coordenadaLat, bano.coordenadaLng,
     );
   }
-
-
 
   void setFacultadFilter(String? facultad) {
     _selectedFacultad = facultad;
@@ -453,6 +462,7 @@ class MapProvider with ChangeNotifier {
     BanoModel? nearest;
     double minDistance = double.infinity;
 
+    // el botón "Ir al baño más cercano" respete los filtros
     for (var bano in banosFiltered) {
       if (bano.estado != 'disponible') continue;
 

@@ -10,13 +10,26 @@ class FilterBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final mapProvider = context.watch<MapProvider>();
     
+    // Obtener facultades dinámicamente
     final facultades = mapProvider.banos
         .map((b) => b.facultadNombre)
         .where((f) => f != null)
         .toSet()
         .toList();
     
-    final pisos = ['PB', 'P1', 'P2', 'P3', 'P4'];
+    // ✅ FIX APLICADO: Obtener pisos dinámicamente de los baños disponibles
+    // Esto evita que aparezcan pisos como P3 o P4 si no existen en la BD
+    final pisos = mapProvider.banos
+        .map((b) => b.piso)
+        .toSet()
+        .toList()
+        ..sort((a, b) {
+          // Ordenar: PB primero, luego P1, P2, etc.
+          if (a == 'PB') return -1;
+          if (b == 'PB') return 1;
+          return a.compareTo(b);
+        });
+    
     final generos = ['hombres', 'mujeres', 'universal'];
 
     return Container(
@@ -43,6 +56,7 @@ class FilterBottomSheet extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           
+          // Filtro de Facultad
           DropdownButtonFormField<String>(
             initialValue: mapProvider.selectedFacultad,
             decoration: const InputDecoration(
@@ -57,6 +71,7 @@ class FilterBottomSheet extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           
+          // Filtro de Piso (Dinámico)
           DropdownButtonFormField<String>(
             initialValue: mapProvider.selectedPiso,
             decoration: const InputDecoration(
@@ -71,6 +86,7 @@ class FilterBottomSheet extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           
+          // Filtro de Género
           DropdownButtonFormField<String>(
             initialValue: mapProvider.selectedGenero,
             decoration: const InputDecoration(
@@ -85,6 +101,7 @@ class FilterBottomSheet extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           
+          // Switch Accesibilidad
           SwitchListTile(
             title: const Text('Solo accesibles'),
             subtitle: const Text('Baños con rampas/elevador'),

@@ -130,7 +130,7 @@ class _MyReportesPageState extends State<MyReportesPage> {
                                     ],
                                   ),
 
-                                  // Badge de tipo de recurso (NUEVO)
+                                  // Badge de tipo de recurso 
                                   if (reporte.isReportePuerta) ...[
                                     const SizedBox(height: 8),
                                     Container(
@@ -300,19 +300,24 @@ class _MyReportesPageState extends State<MyReportesPage> {
 
   String _formatTipo(String tipo) {
     final Map<String, String> tipos = {
-      'limpieza': 'Limpieza',
-      'dano_instalaciones': 'Daño en instalaciones',
-      'sin_papel': 'Sin papel higiénico',
-      'sin_agua': 'Sin agua',
-      'puerta_danada': 'Puerta dañada',
-      'sin_luz': 'Sin luz',
-      'otro': 'Otro',
+      'limpieza': '🧹 Limpieza',
+      'dano_instalaciones': '🔧 Daño en instalaciones',
+      'sin_papel': '🧻 Sin papel',
+      'sin_agua': '💧 Sin agua',
+      'puerta_danada': '🚪 Puerta dañada',
+      'sin_luz': '💡 Sin luz',
+      'otro': '📝 Otro',
       'puerta_cerrada': '🚪 Puerta cerrada',
     };
     return tipos[tipo] ?? tipo;
   }
 
-  String _formatUrgencia(String urgencia) {
+  //  Ahora acepta String? para urgencia
+  String _formatUrgencia(String? urgencia) {
+    if (urgencia == null || urgencia.isEmpty) {
+      return 'Sin asignar';
+    }
+
     final Map<String, String> urgencias = {
       'baja': 'Baja',
       'media': 'Media',
@@ -321,7 +326,11 @@ class _MyReportesPageState extends State<MyReportesPage> {
     return urgencias[urgencia] ?? urgencia;
   }
 
-  Color _getUrgenciaColor(String urgencia) {
+  Color _getUrgenciaColor(String? urgencia) {
+    if (urgencia == null || urgencia.isEmpty) {
+      return AppColors.textSecondary;
+    }
+
     switch (urgencia) {
       case 'baja':
         return AppColors.disponible;

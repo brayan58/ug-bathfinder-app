@@ -5,7 +5,6 @@ import '../../../data/models/bano_model.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 
-
 class CreateReportePage extends StatefulWidget {
   final BanoModel bano;
 
@@ -20,7 +19,6 @@ class _CreateReportePageState extends State<CreateReportePage> {
   final _descripcionController = TextEditingController();
 
   String? _selectedTipo;
-  String _selectedUrgencia = 'media';
 
   final Map<String, String> _tipos = {
     'limpieza': AppStrings.tipoLimpieza,
@@ -82,7 +80,7 @@ class _CreateReportePageState extends State<CreateReportePage> {
                 ),
               ),
               const SizedBox(height: 24),
-              
+
               // Tipo de problema
               const Text(
                 'Tipo de problema *',
@@ -114,43 +112,10 @@ class _CreateReportePageState extends State<CreateReportePage> {
                 },
               ),
               const SizedBox(height: 24),
-              
-              // Urgencia
-              const Text(
-                'Urgencia *',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(
-                    value: 'baja',
-                    label: Text('Baja'),
-                    icon: Icon(Icons.info_outline),
-                  ),
-                  ButtonSegment(
-                    value: 'media',
-                    label: Text('Media'),
-                    icon: Icon(Icons.warning_amber),
-                  ),
-                  ButtonSegment(
-                    value: 'alta',
-                    label: Text('Alta'),
-                    icon: Icon(Icons.error_outline),
-                  ),
-                ],
-                selected: {_selectedUrgencia},
-                onSelectionChanged: (Set<String> newSelection) {
-                  setState(() {
-                    _selectedUrgencia = newSelection.first;
-                  });
-                },
-              ),
-              const SizedBox(height: 24),
-              
+
               // Descripción
               const Text(
-                'Descripción (opcional)',
+                'Descripción *',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
@@ -158,12 +123,22 @@ class _CreateReportePageState extends State<CreateReportePage> {
                 controller: _descripcionController,
                 maxLines: 4,
                 decoration: const InputDecoration(
-                  hintText: 'Describe el problema con más detalle...',
+                  hintText:
+                      'Describe el problema con detalle (mínimo 10 caracteres)...',
                   alignLabelWithHint: true,
                 ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'La descripción es obligatoria';
+                  }
+                  if (value.trim().length < 10) {
+                    return 'La descripción debe tener al menos 10 caracteres';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 32),
-              
+
               // Botón de enviar
               Consumer<ReportesProvider>(
                 builder: (context, reportesProvider, child) {
@@ -187,8 +162,8 @@ class _CreateReportePageState extends State<CreateReportePage> {
                   );
                 },
               ),
-              
-              // Nota sobre conexión
+
+              // Nota informativa
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -199,11 +174,12 @@ class _CreateReportePageState extends State<CreateReportePage> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline, color: Colors.blue.shade700, size: 20),
+                    Icon(Icons.info_outline,
+                        color: Colors.blue.shade700, size: 20),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Se requiere conexión a internet para enviar el reporte.',
+                        'El administrador revisará tu reporte y asignará la prioridad correspondiente.',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.blue.shade700,
@@ -226,10 +202,8 @@ class _CreateReportePageState extends State<CreateReportePage> {
     final success = await provider.createReporte(
       banoId: widget.bano.id,
       tipo: _selectedTipo!,
-      urgencia: _selectedUrgencia,
-      descripcion: _descripcionController.text.trim().isEmpty
-          ? null
-          : _descripcionController.text.trim(),
+      urgencia: '', //  String vacío - Admin la asignará después
+      descripcion: _descripcionController.text.trim(),
     );
 
     if (!mounted) return;
@@ -238,14 +212,17 @@ class _CreateReportePageState extends State<CreateReportePage> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('✅ Reporte enviado exitosamente'),
+          content:
+              Text('✅ Reporte enviado. El administrador lo revisará pronto.'),
           backgroundColor: AppColors.success,
+          duration: Duration(seconds: 3),
         ),
       );
     } else {
-      // Mostrar diálogo de error más visible si es error de conexión
+      // Mostrar diálogo de error si es error de conexión
       if (provider.isConnectionError) {
-        _showConnectionErrorDialog(provider.errorMessage ?? 'Error de conexión');
+        _showConnectionErrorDialog(
+            provider.errorMessage ?? 'Error de conexión');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
