@@ -20,7 +20,7 @@ class MapProvider with ChangeNotifier {
   
   // Puertas 
   List<PuertaModel> _puertas = [];
-  bool _showPuertas = true; // Toggle para mostrar/ocultar puertas
+  bool _showPuertas = true; 
   
   Set<Marker> _markers = {};
   bool _isLoading = true;
@@ -57,8 +57,8 @@ class MapProvider with ChangeNotifier {
   
   // Límites de la Ciudadela Universitaria (29.5 hectáreas)
   static final LatLngBounds _campusBounds = LatLngBounds(
-    southwest: const LatLng(-2.1870, -79.8975),
-    northeast: const LatLng(-2.1798, -79.8942),
+    southwest: const LatLng(-2.1855, -79.9030),
+    northeast: const LatLng(-2.1770, -79.8930),
   );
 
   // Getters existentes
