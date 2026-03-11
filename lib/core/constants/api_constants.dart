@@ -7,6 +7,7 @@ class ApiConstants {
   // Auth endpoints
   static String get register => '$baseUrl/auth/register.php';
   static String get login => '$baseUrl/auth/login.php';
+  static String get verifyCode => '$baseUrl/auth/verify_code.php'; 
   
   // Baños endpoints
   static String get getBanos => '$baseUrl/banos/get_all.php';
@@ -19,6 +20,3 @@ class ApiConstants {
   static String get createReporte => '$baseUrl/reportes/create.php';
   static String get getMyReportes => '$baseUrl/reportes/get_by_user.php';
 }
-
-
-

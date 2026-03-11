@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_colors.dart';
-
+import 'verify_code_page.dart'; 
+import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -48,20 +49,41 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
     final authProvider = context.read<AuthProvider>();
-    final success = await authProvider.login(
-      _emailController.text.trim(),
-      _passwordController.text,
-    );
+    final success = await authProvider.login(email, password);
 
     if (mounted) {
       if (success) {
         Navigator.pushReplacementNamed(context, '/map');
       } else {
-        // Mostrar diálogo si es error de conexión, SnackBar si es otro error
-        if (authProvider.isConnectionError) {
+      
+        if (authProvider.isPendingVerification) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Cuenta no verificada. Revisa tu correo institucional.'),
+              backgroundColor: Colors.orange,
+              duration: Duration(seconds: 4),
+            ),
+          );
+          
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VerifyCodePage(
+                email: authProvider.pendingEmail ?? email,
+              ),
+            ),
+          );
+        } 
+        // Mostrar diálogo si es error de conexión
+        else if (authProvider.isConnectionError) {
           _showConnectionErrorDialog(authProvider.errorMessage ?? 'Error de conexión');
-        } else {
+        } 
+        
+        else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(authProvider.errorMessage ?? AppStrings.loginError),
@@ -74,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  // Muestra un diálogo de error de conexión
+
   void _showConnectionErrorDialog(String message) {
     showDialog(
       context: context,
@@ -244,6 +266,26 @@ class _LoginPageState extends State<LoginPage> {
                       );
                     },
                     child: const Text(AppStrings.forgotPassword),
+                  ),
+
+                  // Ir a pantalla de registro
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('¿No tienes cuenta?'),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const RegisterPage()),
+                          );
+                        },
+                        child: const Text(
+                          'Regístrate aquí',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
                   ),
                   
                   // Nota sobre conexión
